@@ -123,31 +123,45 @@ cubePlot <- function(x, r, g, b, ncol = 1, nrow = 1, sidecol = colorRamp(palette
   texture_side_4 <- .plotRGB_temp(ras = ra, side = 4, ncol = ncol, nrow = nrow, sidecol = sidecol)
 
   rgl::open3d()
-  rgl::rgl.surface(x, y, z, col = "white", 
+  rgl::surface3d(x, z, y, col = "white", 
                    axes = FALSE, box = FALSE,
                    texture = texture)
   z <- matrix(0, ncol = ncol(ra@spectra@spectra_ra), nrow = z_interpolate)
   x <- c(1:nrow(z))-1
   y <- c(1:ncol(z))-1
-  rgl::rgl.surface(x, y, z, col = "white",
-                   axes = FALSE, box = FALSE, coords = c(2,3,1),
-                   texture = texture_side_1, add = TRUE)
+  rgl::surface3d(y, x, t(z), col = "white",
+                   axes = FALSE, box = FALSE, # coords = c(2,3,1),
+                   texture = texture_side_1,
+                   # This transposes the texture
+                   texture_s = matrix(x/max(x), ncol(z), nrow(z), byrow=TRUE),
+                   texture_t = matrix(rev(y/max(y)), ncol(z),
+                                      nrow(z)))
   
   z <- z + nrow(ra@spectra@spectra_ra)-1
-  rgl::rgl.surface(x, y, z, col = "white",
+  rgl::surface3d(y, x, t(z), col = "white",
                    axes = FALSE, box = FALSE, coords = c(2,3,1),
-                   texture = texture_side_3, add = TRUE)
+                   texture = texture_side_3,
+                 texture_s = matrix(x/max(x), ncol(z), nrow(z), byrow=TRUE),
+                 texture_t = matrix(rev(y/max(y)), ncol(z),
+                                    nrow(z)))
 
   z <- matrix(0, ncol = nrow(ra@spectra@spectra_ra), nrow = z_interpolate)
   x <- c(1:nrow(z))-1
   y <- c(1:ncol(z))-1
-  rgl::rgl.surface(x, y, z, col = "white",
+  rgl::surface3d(t(z), x, y, col = "white",
                    axes = FALSE, box = FALSE, coords = c(2,1,3),
-                   texture = texture_side_2, add= TRUE)
+                   texture = texture_side_2,
+                 texture_s = matrix(x/max(x), ncol(z), nrow(z), byrow=TRUE),
+                 texture_t = matrix(rev(y/max(y)), ncol(z),
+                                    nrow(z)))
 
   z <- z + ncol(ra@spectra@spectra_ra)-1
-  rgl::rgl.surface(x, y, z, col = "white",
-                   axes = FALSE, box = FALSE, coords = c(2,1,3),
-                   texture = texture_side_4, add= TRUE)
+  rgl::surface3d(t(z), x, y, col = "white",
+                   axes = FALSE, box = FALSE,
+                   texture = texture_side_4,
+                 texture_s = matrix(x/max(x), ncol(z), nrow(z), byrow=TRUE),
+                 texture_t = matrix(rev(y/max(y)), ncol(z),
+                                    nrow(z)))
+  rgl::aspect3d(1,1,1)
 }
 
